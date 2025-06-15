@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Scoreboard</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    #loginForm, #editForm {
+      display: none;
+      margin-top: 20px;
+    }
+    input {
+      margin: 5px;
+    }
+  </style>
+</head>
+<body>
+  <div class="background"></div>
+
+  <header><h1>Scoreboard</h1></header>
+
+  <nav>
+    <a href="index.html">Register</a>
+    <a href="schedule.html">View Schedule</a>
+    <a href="score.html">Score</a>
+  </nav>
+
+  <div class="container">
+    <h2>Match Scoreboard</h2>
+    <table id="scoreboard" style="color:#003333;">
+      <thead>
+        <tr>
+          <th>Match ID</th>
+          <th>Team 1</th>
+          <th>Team 2</th>
+          <th>Team 1 Score</th>
+          <th>Team 2 Score</th>
+          
+          <th>Winner Team ID</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+
+    <button onclick="showLogin()">Edit Scoreboard</button>
+
+    <div id="loginForm">
+      <h3>Admin Login</h3>
+      <input type="number" id="userId" placeholder="User ID" />
+      <input type="password" id="password" placeholder="Password" />
+      <button onclick="authenticate()">Login</button>
+    </div>
+
+    <div id="editForm">
+      <h3>Edit Match Score</h3>
+      <input type="number" id="matchId" placeholder="Match ID" />
+      <input type="number" id="team1Score" placeholder="Team 1 Score" />
+      <input type="number" id="team2Score" placeholder="Team 2 Score" />
+      <input type="number" id="winnerTeamId" placeholder="Winner Team ID" />
+      <button onclick="submitEdit()">Submit</button>
+    </div>
+  </div>
+
+  <script>
+    let currentUserId = null;
+
+    function loadScoreboard() {
+      fetch('/scoreboard')
+        .then(res => res.json())
+        .then(data => {
+          const tbody = document.querySelector("#scoreboard tbody");
+          tbody.innerHTML = ""; // Clear old rows
+          data.forEach(row => {
+            const tr = document.createElement("tr");
+            tr.innerHTML = `
+            <td>${row.MatchID}</td>
+            <td>${row.Team1}</td>
+            <td>${row.Team2}</td>
+            <td>${row.Team1Score}</td>
+            <td>${row.Team2Score}</td>
+            <td>${row.Winner}</td>
+          `;
+            tbody.appendChild(tr);
+          });
+        });
+    }
+
+    function showLogin() {
+      document.getElementById("loginForm").style.display = "block";
+    }
+
+    function authenticate() {
+      const userId = document.getElementById("userId").value;
+      const password = document.getElementById("password").value;
+
+      fetch('/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ UserID:userId,Passcode: password })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.message ==='Login successful') {
+          alert("Login successful!");
+          currentUserId = userId;
+          document.getElementById("editForm").style.display = "block";
+          document.getElementById("loginForm").style.display = "none";
+        } else {
+          alert("Invalid credentials.");
+        }
+      });
+    }
+
+    function submitEdit() {
+      const matchId = document.getElementById("matchId").value;
+      const team1Score = document.getElementById("team1Score").value;
+      const team2Score = document.getElementById("team2Score").value;
+      const winnerTeamId = document.getElementById("winnerTeamId").value;
+
+      if (!currentUserId) {
+        alert("You must be logged in to edit.");
+        return;
+      }
+
+      fetch(`/scoreboard/${matchId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          Team1Score: team1Score,
+          Team2Score : team2Score,
+          winnerTeamId:winnerTeamId || null
+        })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.message ==='Score updated successfully') {
+          alert("Score updated successfully!");
+          loadScoreboard(); // Reload table data
+        } else {
+          alert("Failed to update score: " + data.message);
+        }
+      });
+    }
+    // Load scores on page load
+    loadScoreboard();
+  </script>
+</body>
+</html>

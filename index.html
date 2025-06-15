@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>SportSync - Main</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>🏆 SportSync - Sports Week</h1>
+  </header>
+  <nav>
+    <a href="index.html">Register</a>
+    <a href="schedule.html">View Schedule</a>
+    <a href="score.html">Score</a>
+  </nav>
+  <div class="background"></div>
+  <div class="main-content">
+  <div class="icontainer">
+    <h2 style="color:#003333;">Register as a Player</h2>
+    <form id="registerForm">
+      <label style="color:#f6f4f3;">Name:</label>
+      <input type="text" name="PlayerName" placeholder="Enter your name" required>
+      <br>
+       <label style="color:#f6f4f3;">ID:</label><br>
+      <input type="number" name="PlayerID" placeholder="Enter your ID" required>
+      <br>
+       <label style="color:#f6f4f3;">Kit Number:</label><br>
+      <input type="number" name="KitNo" placeholder="Enter your kitno" required>
+      <br>
+      <label style="color:#f6f4f3;">Age:</label><br>
+      <input type="number" name="Age" placeholder="Enter your age" required>
+      <br>
+      <label style="color:#f6f4f3;">Select Department:</label><br>
+      <select name="Department">
+        <option>Computer Science</option>
+        <option>Electrical Engineering</option>
+        <option>Material Science</option>
+        <option>Mechanical Engineering</option>
+        <option>Space Science</option>
+        <option>Aerospace Engineering</option>
+      </select>
+      
+     <div id="eventOptions">
+    <label style="color:#f6f4f3;">Select Events:</label><br>
+     <!-- checkboxes will be injected here dynamically thru javascript-->
+    </div>
+      <button type="submit">Register</button>
+    </form>
+    </div>
+    <div class="team-list">
+  <h2 style="color:#003333;">Team Overview</h2>
+  <table id="teamTable">
+    <thead>
+      <tr>
+        <th>Team Name</th>
+        <th>Current Members</th>
+        <th>Total Members</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+</div>
+</div>
+</body>
+
+<script>
+  //for player registeration
+  document.getElementById('registerForm').addEventListener('submit',async function(e){
+    e.preventDefault();
+
+    const formData = new FormData(this);
+    const player = {};
+    formData.forEach((value,key)=>{
+      if(key=== 'events') {
+        if(!player.events) player.events = [];
+        player.events.push(value);
+      } else {
+        player[key] = value;
+      }
+    });
+
+    try {
+      const res = await fetch('http://localhost:3000/register', {
+        method : 'POST',
+        headers: { 'Content-Type': 'application/json'},
+        body: JSON.stringify(player)
+      });
+
+      const result = await res.json();
+      alert(result.message);
+    } catch(error) {
+      console.error('Error',error);
+      alert('Registeration failed.');
+    }
+  });
+
+//for displaying team members
+  async function fetchTeams() {
+    try {
+      const res = await fetch('http://localhost:3000/teams');
+      const teams = await res.json();
+      const tbody = document.querySelector('#teamTable tbody');
+      teams.forEach(team => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${team.TeamName}</td>
+          <td>${team.CurrentMembers}</td>
+          <td>${team.TotalMembers}</td>
+        `;
+        tbody.appendChild(row);
+      });
+    } catch (error) {
+      console.error('Error fetching teams:', error);
+    }
+  }
+ fetchTeams();
+
+ async function fetchEvents(){
+
+  try{
+    const res = await fetch('http://localhost:3000/events');
+    const events = await res.json();
+
+    console.log('Events fetched:', events);
+
+    const eventContainer = document.getElementById('eventOptions');
+
+    events.forEach(event=> {
+      const wrapper = document.createElement('label');
+      wrapper.style.marginRight = '15px';
+      wrapper.style.display = 'inline-flex';
+      wrapper.style.alignItems = 'center';
+      wrapper.style.color = '#f6f4f3';
+
+      const checkbox = document.createElement('input');
+      checkbox.type = 'checkbox';
+      checkbox.name = 'events';
+      checkbox.value = event.EventID;
+      checkbox.style.marginRight = '5px';
+
+      wrapper.appendChild(checkbox);
+      wrapper.appendChild(document.createTextNode(event.EventName));
+      eventContainer.appendChild(wrapper);
+    });
+  } catch(error) {
+    console.error('Error loading events: ', error);
+  }
+ }
+ fetchEvents();
+ 
+</script>
+</html>

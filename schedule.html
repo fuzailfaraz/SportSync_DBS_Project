@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>SportSync - Schedule</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>📅 View Your Schedule</h1>
+  </header>
+  <nav>
+    <a href="index.html">Register</a>
+    <a href="schedule.html">View Schedule</a>
+     <a href="score.html">Score</a>
+  </nav>
+<div class="background"></div>
+  <div class="container">
+    <h2 style="color:#003333;">View Player Schedule</h2>
+    <input type="number" id="playerIdInput" placeholder="Enter your Player ID">
+    <button onclick="viewPlayerSchedule()">View Schedule</button>
+
+    <h2 style="color:#003333; margin-top: 30px;">OR<br> View Team Schedule</h2>
+    <select id="teamSelect">
+    <option value="" disabled selected>Select Team</option>
+    <option value="CS">CS</option>
+    <option value="ME">ME</option>
+    <option value="EE">EE</option>
+    <option value="SS">SS</option> 
+    <option value="AE">AE</option>
+    <option value="MS">MS</option>
+    </select>
+    <button onclick="redirectToTeamSchedule()">View Schedule</button>
+
+     <h2 style="color:#003333; margin-top: 30px;">OR<br> View Event Schedule</h2>
+    <select id="eventSelect">
+    <option value="" disabled selected>Select Event</option>
+    <option value="Football">Football</option>
+    <option value="Futsal">Futsal</option>
+    <option value="Badminton">Badminton</option>
+    <option value="BasketBall">BasketBall</option> 
+    <option value="Tennis">Tennis</option>
+    <option value="Tug of War">Tug of War</option>
+    </select>
+    <button onclick="redirectToEventSchedule()">View Schedule</button>
+
+    <hr>
+    <div id="fullScheduleContainer">
+      <!--Full schedule will be dynamically loaded here-->
+    </div>  
+  </div>
+<script>
+  //player schedule
+  function viewPlayerSchedule(){
+        const playerId = document.getElementById('playerIdInput').value.trim();
+    if (!playerId) {
+      alert('Please enter your Player ID');
+      return;
+    }
+    window.location.href = `pschedule.html?playerId=${playerId}`;
+  }
+  function redirectToTeamSchedule(){
+    const team = document.getElementById('teamSelect').value;
+    if (team) {
+      window.location.href = `team-schedule.html?team=${encodeURIComponent(team)}`;
+    } else {
+      alert("Please select a team.");
+    }
+  }
+  async function loadFullSchedule() {
+    try {
+      const response = await fetch('http://localhost:3000/schedule/full');
+      const data = await response.json();
+
+      const container = document.getElementById('fullScheduleContainer');
+
+      if (!data.length) {
+        container.innerHTML = '<p>No matches found.</p>';
+        return;
+      }
+
+      // Create table headers
+      let html = `
+        <h3 style="color:#003333;">📋 Full Match Schedule</h3>
+        <table border="1" cellpadding="8" cellspacing="0" style="width:100%; border-collapse: collapse; color:#003333; background-color: #f6f4f3;">
+          <thead>
+            <tr>
+              <th>Match ID</th>
+              <th>Team 1</th>
+              <th>Team 2</th>
+              <th>Sport</th>
+              <th>Venue</th>
+              <th>Head</th>
+              <th>Status</th>
+              <th>Date</th>
+              <th>Time</th>
+            </tr>
+          </thead>
+          <tbody>
+      `;
+
+      for (const match of data) {
+        const date = new Date(match.MatchDate).toLocaleDateString();
+        const time = match.MatchTime;
+
+        html += `
+          <tr>
+            <td>${match.MatchID}</td>
+            <td>${match.Team1}</td>
+            <td>${match.Team2}</td>
+            <td>${match.Sport}</td>
+            <td>${match.Venue}</td>
+            <td>${match.Head}</td>
+            <td>${match.matchStatus}</td>
+            <td>${date}</td>
+            <td>${time}</td>
+          </tr>
+        `;
+      }
+
+      html += `</tbody></table>`;
+      container.innerHTML = html;
+
+    } catch (error) {
+      console.error('Error loading full schedule:', error);
+      console.error('Error loading full schedule:', error.message);
+
+      document.getElementById('fullScheduleContainer').innerHTML = '<p style="color:red;">Failed to load schedule.</p>';
+    }
+  }
+  function redirectToEventSchedule() {
+  const event = document.getElementById('eventSelect').value;
+  if (event) {
+    window.location.href = `event-schedule.html?event=${encodeURIComponent(event)}`;
+  } else {
+    alert("Please select an event.");
+  }
+}
+
+
+  // Call the function when the page loads
+  window.addEventListener('DOMContentLoaded', loadFullSchedule);
+</script>
+
+</body>
+</html>

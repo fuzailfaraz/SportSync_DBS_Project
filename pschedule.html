@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Player Schedule</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    #message {
+      color: red;
+      margin-top: 20px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Player Schedule</h1>
+  </header>
+
+  <nav>
+    <a href="index.html">Register</a>
+    <a href="schedule.html">View Schedule</a>
+       <a href="score.html">Score</a>
+  </nav>
+<div class="background"></div>
+  <div id="message"></div>
+
+  <div class="container" id="playerInfo">
+    <!-- Player details will appear here -->
+  </div>
+
+  <div class="container" id="scheduleOutput">
+    <!-- Schedule table will appear here -->
+  </div>
+
+  <script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const playerId = urlParams.get('playerId');
+    const outputDiv = document.getElementById('scheduleOutput');
+    const messageDiv = document.getElementById('message');
+    const playerInfoDiv = document.getElementById('playerInfo');
+
+    async function loadPlayerSchedule() {
+      if (!playerId) {
+        messageDiv.textContent = 'Error: Player ID not found in URL.';
+        return;
+      }
+
+      try {
+        const response = await fetch(`http://localhost:3000/player/${playerId}/schedule`);
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+
+        const data = await response.json();
+
+        if (!data || !data.player || !data.schedule.length) {
+          messageDiv.textContent = `No schedule found for Player ID: ${playerId}`;
+          return;
+        }
+
+        // Show player info
+        const { PlayerID, PlayerName, TeamName } = data.player;
+        playerInfoDiv.innerHTML = `
+          <h2>Player Information</h2>
+          <p><strong>ID:</strong> ${PlayerID}</p>
+          <p><strong>Name:</strong> ${PlayerName}</p>
+          <p><strong>Team:</strong> ${TeamName}</p>
+        `;
+
+        // Build schedule table
+        let tableHTML = `
+          <h2>Registered Events & Schedule</h2>
+          <table style="color:#254222">
+            <thead>
+              <tr>
+                <th>Event</th>
+                <th>Opponent Team</th>
+                <th>Venue</th>
+                <th>Status</th>
+                <th>Date</th>
+                <th>Time</th>
+              </tr>
+            </thead>
+            <tbody>
+        `;
+
+        data.schedule.forEach(match => {
+          const matchDate = match.MatchDate ? new Date(match.MatchDate).toLocaleDateString() : '-';
+          tableHTML += `
+            <tr>
+              <td>${match.EventName}</td>
+              <td>${match.OpponentTeam || '-'}</td>
+              <td>${match.VenueName || '-'}</td>
+              <td>${match.matchStatus || '-'}</td>
+              <td>${matchDate}</td>
+              <td>${match.MatchTime || '-'}</td>
+            </tr>
+          `;
+        });
+
+        tableHTML += `</tbody></table>`;
+        outputDiv.innerHTML = tableHTML;
+
+      } catch (err) {
+        console.error('Error fetching player schedule:', err);
+        messageDiv.textContent = 'Failed to load schedule. Please try again later.';
+      }
+    }
+
+    loadPlayerSchedule();
+  </script>
+</body>
+</html>

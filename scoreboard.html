@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Scoreboard</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+    table {
+      width: 50%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 8px;
+      text-align: center;
+    }
+    #loginForm, #editForm {
+      display: none;
+      margin-top: 20px;
+    }
+    .btn {
+      padding: 8px 16px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Match Scoreboard</h1>
+
+  <table id="scoreboard">
+    <thead>
+      <tr>
+        <th>Match ID</th>
+        <th>Team 1 Score</th>
+        <th>Team 2 Score</th>
+        <th>Winner Team ID</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>101</td>
+        <td>2</td>
+        <td>3</td>
+        <td>2</td>
+      </tr>
+      <!-- Add more rows here dynamically from backend -->
+    </tbody>
+  </table>
+
+  <button class="btn" onclick="showLogin()">Edit Scoreboard</button>
+
+  <div id="loginForm">
+    <h3>Admin Login</h3>
+    <input type="number" id="userId" placeholder="User ID"><br><br>
+    <input type="password" id="password" placeholder="Password"><br><br>
+    <button class="btn" onclick="authenticate()">Login</button>
+  </div>
+
+  <div id="editForm">
+    <h3>Edit Match Score</h3>
+    <input type="number" id="matchId" placeholder="Match ID"><br><br>
+    <input type="number" id="team1Score" placeholder="Team 1 Score"><br><br>
+    <input type="number" id="team2Score" placeholder="Team 2 Score"><br><br>
+    <input type="number" id="winnerTeamId" placeholder="Winner Team ID"><br><br>
+    <button class="btn" onclick="submitEdit()">Submit</button>
+  </div>
+
+  <script>
+    function showLogin() {
+      document.getElementById("loginForm").style.display = "block";
+    }
+
+    function authenticate() {
+      const userId = document.getElementById("userId").value;
+      const password = document.getElementById("password").value;
+
+      // This would be an actual API call in a real app
+      fetch('/api/auth', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId, password })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          alert("Login successful!");
+          document.getElementById("editForm").style.display = "block";
+        } else {
+          alert("Invalid credentials.");
+        }
+      });
+    }
+
+    function submitEdit() {
+      const matchId = document.getElementById("matchId").value;
+      const team1Score = document.getElementById("team1Score").value;
+      const team2Score = document.getElementById("team2Score").value;
+      const winnerTeamId = document.getElementById("winnerTeamId").value;
+
+      fetch('/api/update-score', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ matchId, team1Score, team2Score, winnerTeamId })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          alert("Score updated successfully!");
+          location.reload();
+        } else {
+          alert("Failed to update score.");
+        }
+      });
+    }
+  </script>
+
+</body>
+</html>

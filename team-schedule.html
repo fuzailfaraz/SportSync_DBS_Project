@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Team Schedule</title>
+  <link rel="stylesheet" href="style.css"> <!-- your existing CSS -->
+</head>
+<body>
+  <header><h1>Team Schedule</h1></header>
+     <nav>
+    <a href="index.html">Register</a>
+    <a href="schedule.html">View Schedule</a>
+    <a href="score.html">Score</a>
+  </nav>
+<div class="background"></div>
+  <div class="team-list" id="scheduleContainer">
+    <h2 id="teamHeading"></h2>
+    <table id="scheduleTable">
+      <thead>
+        <tr>
+          <th>Match ID</th>
+          <th>Team 1</th>
+          <th>Team 2</th>
+          <th>Sport</th>
+          <th>Venue</th>
+          <th>Head</th>
+          <th>Status</th>
+          <th>Date</th>
+          <th>Time</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Schedule rows will be injected here -->
+      </tbody>
+    </table>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const team = urlParams.get('team');
+      document.getElementById('teamHeading').innerText = `Schedule for Team: ${team}`;
+
+      fetch(`/schedule/team/${team}`)
+        .then(res => res.json())
+        .then(data => {
+           console.log("Schedule data received:", data); 
+          const tbody = document.querySelector('#scheduleTable tbody');
+          tbody.innerHTML = '';
+
+          if (data.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="8">No matches scheduled.</td></tr>';
+          } else {
+            data.forEach(match => {
+                const matchDate = new Date(match.MatchDate).toLocaleDateString();
+                const matchTime = match.MatchTime;
+              tbody.innerHTML += `
+                <tr>
+                  <td>${match.MatchID}</td>
+                  <td>${match.Team1}</td>
+                  <td>${match.Team2}</td>
+                  <td>${match.Sport}</td>
+                  <td>${match.Venue}</td>
+                  <td>${match.Head}</td>
+                  <td>${match.matchStatus}</td>
+                  <td>${matchDate}</td>
+                  <td>${matchTime}</td>
+                </tr>`;
+            });
+          }
+        });
+    });
+  </script>
+</body>
+</html>

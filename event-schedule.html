@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Event Schedule</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>🏆 Event Schedule</h1>
+  </header>
+   <nav>
+    <a href="index.html">Register</a>
+    <a href="schedule.html">View Schedule</a>
+    <a href="score.html">Score</a>
+  </nav>
+<div class="background"></div>
+  <div class="container" id="eventScheduleContainer">
+    <!-- Event schedule will load here -->
+  </div>
+
+  <script>
+    async function loadEventSchedule() {
+      const params = new URLSearchParams(window.location.search);
+      const event = params.get('event');
+      if (!event) {
+        document.getElementById('eventScheduleContainer').innerHTML = '<p>No event selected.</p>';
+        return;
+      }
+
+      try {
+        const response = await fetch(`http://localhost:3000/schedule/event/${encodeURIComponent(event)}`);
+        const data = await response.json();
+
+        if (!data.length) {
+          document.getElementById('eventScheduleContainer').innerHTML = '<p>No matches found for this event.</p>';
+          return;
+        }
+
+        let html = `
+          <h2 style="color:#003333;">Schedule for ${event}</h2>
+          <table border="1" cellpadding="8" cellspacing="0" style="width:100%; border-collapse: collapse; color:#003333; background-color: #f6f4f3;">
+            <thead>
+              <tr>
+                <th>Match ID</th>
+                <th>Team 1</th>
+                <th>Team 2</th>
+                <th>Venue</th>
+                <th>Head</th>
+                <th>Status</th>
+                <th>Date</th>
+                <th>Time</th>
+              </tr>
+            </thead>
+            <tbody>
+        `;
+
+        for (const match of data) {
+          const date = new Date(match.MatchDate).toLocaleDateString();
+          const time = match.MatchTime;
+          html += `
+            <tr>
+              <td>${match.MatchID}</td>
+              <td>${match.Team1}</td>
+              <td>${match.Team2}</td>
+              <td>${match.Venue}</td>
+              <td>${match.Head}</td>
+              <td>${match.matchStatus}</td>
+              <td>${date}</td>
+              <td>${time}</td>
+            </tr>
+          `;
+        }
+
+        html += '</tbody></table>';
+        document.getElementById('eventScheduleContainer').innerHTML = html;
+
+      } catch (err) {
+        console.error('Error loading event schedule:', err);
+        document.getElementById('eventScheduleContainer').innerHTML = '<p style="color:red;">Failed to load event schedule.</p>';
+      }
+    }
+
+    window.addEventListener('DOMContentLoaded', loadEventSchedule);
+  </script>
+</body>
+</html>

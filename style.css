@@ -1,0 +1,197 @@
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  margin-bottom: 30px;
+}
+.background {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-image: url('https://t3.ftcdn.net/jpg/02/48/65/38/240_F_248653851_lMw1RUwPLpaBsSCT31eE3ZDY8WkIFpiq.jpg');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      opacity: 0.7;
+      z-index: -1;
+    }
+header {
+  background:#003333 ;
+  color: #cae4c5;
+  padding: 15px;
+  text-align: center;
+  font-size: 1.8rem;
+  letter-spacing: 1.2px;
+}
+
+nav {
+  background: #027c68;
+  padding: 10px;
+  text-align: center;
+}
+
+nav a {
+  color:#cae4c5;
+  margin: 0 15px;
+  text-decoration: none;
+  font-weight: bold;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  padding: 6px 12px;
+  border-radius: 4px;
+}
+
+nav a:hover {
+  background-color: #cae4c5 ;
+  color: #027c68;
+  font-size : 17px;
+}
+.icontainer{
+  background:#027c68 ;
+   border-radius: 8px;
+  padding: 20px;
+  margin-left: auto;
+  margin-right: auto;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+   margin-top: 30px;
+   width: 600px;
+}
+/*Comtainers and layouts*/
+.container,.team-list {
+  background:#027c68 ;
+  border-radius: 8px;
+  padding: 20px;
+  margin-top: 30px;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+  color: #f6f4f3;
+  overflow-x: auto;   /*Enable horizontal scroll on small screens*/
+}
+
+/*input and buton styling*/
+input,select{
+  width: 95%;
+  padding: 10px;
+  margin: 10px 0;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  color: #253D2C;
+  font-size: 1rem;
+}
+
+button {
+  width : 50%;
+  padding : 12px;
+  display : block;
+  margin : 10px auto;
+  border-radius: 5px;
+  font-weight: bold;
+  font-size: 1.1rem;
+  border : 1px solid #254222;
+  background-color :#254222;
+  color: #f6f4f3;
+  cursor: pointer;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+button:hover {
+  background-color: #f6f4f3;
+  color: #254222;
+  border-color: #f6f4f3;
+}
+/*table styling*/
+table {
+  width: 100%;
+  border-collapse: collapse;
+  color: #f6f4f3;
+  min-width: 700px;
+}
+
+th, td {
+  padding: 12px 15px;
+  border-bottom: 1px solid #3a7a68;
+  text-align: center;
+  font-size: 0.95rem;
+}
+
+th {
+  background-color: #165444;
+  font-weight: 600;
+  letter-spacing: 0.05rem;
+  text-transform: uppercase;
+  color:#cae4c5;
+}
+
+tr:nth-child(even) {
+  background-color: #b0e892;
+}
+tr:nth-child(odd) {
+  background-color: #f6f4f3;
+}
+tr:hover {
+  background-color: #b6e59c9a; /* highlight on hover */
+  cursor: default;
+}
+
+@media (max-width: 768px) {
+  .container,
+  .team-list {
+  width: 95%;  /* nearly full width on small screens */
+    padding: 15px;
+}
+  table {
+    min-width: 100%;
+    font-size: 0.85rem;
+  }
+
+  nav a {
+    margin: 0 8px;
+    font-size: 14px;
+  }
+
+  button {
+    width: 70%;
+  }
+}
+.main-content {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  margin-top: 30px;
+  flex-wrap: wrap; /* Ensures responsiveness on small screens */
+}
+
+
+.team-list table {
+  width: 100%;
+  border-collapse: collapse;
+  color: #003333;
+}
+
+.team-list th, .team-list td {
+  padding: 10px;
+  border-bottom: 1px solid #ccc;
+  text-align: center;
+}
+.container, .team-list {
+  width: 90%;          /* increase width to 90% of viewport */
+  max-width: none;     /* remove max-width restriction */
+  padding: 20px 30px;  /* add some horizontal padding */
+  overflow-x: auto;    /* keep horizontal scroll if needed */
+  margin: 30px auto;   /* center with vertical margin */
+  background: #027c68;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  color: #f6f4f3;
+}
+
+#eventOptions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 10px;
+}
